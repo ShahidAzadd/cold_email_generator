@@ -1,0 +1,10 @@
+/venv
+.csv
+my_portfolio.csv
+__pycache__/
+.vscode/
+*.pyc
+*.pyo
+.env
+/vectorstore
+/__pycache__/
