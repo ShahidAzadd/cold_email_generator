@@ -1,5 +1,5 @@
 /venv
-.csv
+*.csv
 my_portfolio.csv
 __pycache__/
 .vscode/
@@ -8,3 +8,4 @@ __pycache__/
 .env
 /vectorstore
 /__pycache__/
+*.txt

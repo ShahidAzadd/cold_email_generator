@@ -18,17 +18,21 @@ def create_streamlit_app(llm,portfolio,clean_text):
     # Set User-Agent
     os.environ["USER_AGENT"] = "Mozilla/5.0 (compatible; MyBot/1.0; +https://example.com/bot)"
 
-    url_input = st.text_input("Paste URL of job posting:", value="https://careers.jameshardie.com/job/Albany%2C-NY-Regional-Account-Manager-Albany-NY-12201/1223646400/")
+    url_input = st.text_input("Paste URL of job posting:", value="loader.load().pop().page_content")
     print("Streamlit app started. URL input:", url_input)
     submit_button = st.button("Submit")
 
     if submit_button:
         try:
 
-            loader = WebBaseLoader([url_input]) # it will do web scrapping
+            loader = WebBaseLoader(url_input) # it will do web scrapping
+            print("WebBaseLoader initialized")
             data = clean_text(loader.load().pop().page_content)
+            print("Data loaded and cleaned")
             portfolio.load_portfolio()
+            print("Portfolio loaded")
             jobs = llm.extract_jobs_details(data)
+            print("Jobs extracted:", jobs)
             for job in jobs:
                 skills = job.get('skills',[])
                 links = portfolio.query_links(skills)
@@ -41,8 +45,8 @@ def create_streamlit_app(llm,portfolio,clean_text):
 if __name__ == "__main__":
     # Initialize the LLM and Portfolio classes
     portfolio = Portfolio()
+
     logging.info("Portfolio initialized")
     chain = Chain()  # Assuming you have a Chains class defined elsewhere
     st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
     create_streamlit_app(chain, portfolio, clean_text)
-    print("Streamlit app created.")

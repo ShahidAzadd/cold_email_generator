@@ -19,27 +19,44 @@ class Chain:
         )
 
     def extract_jobs_details(self,cleaned_text):
+    
         prompt_extract = PromptTemplate.from_template(
-        """
-        ### SCRAPED TEXT FROM WEBSITE:
-        {page_data}
-        ### INSTRUCTION:
-        The scraped text from the career's page of a website.
-        Your job is to extract the job postings and return them in JSON format containing the 
-        following keys: `role`, `experience`, `skills` and `description`.
-        Only return the valid JSON.
-        ### VALID JSON (NO PREAMBLE):    
-        """
+            """
+            ### SCRAPED TEXT FROM WEBSITE:
+            {page_data}
+            ### INSTRUCTION:
+            The scraped text from the career's page of a website.
+            Your job is to extract the job postings and return them in JSON format containing the 
+            following keys: "role", "experience", "skills" and "description".
+            Only return the valid JSON. NO PREAMBLE 
+            Return the JSON in the following format:
+            [
+                {{
+                    "role": "Software Engineer",
+                    "experience": "3-5 years",
+                    "skills": ["Python", "JavaScript"],
+                    "description": "We are looking for a Software Engineer with experience in Python and JavaScript."
+                }}
+            ]
+            """
         )
-
+        print("Prompt template created.")
         prompt_extract = prompt_extract | self.llm # chain the prompt with the LLM
+        print("Prompt template chained with LLM.")
+        print("Invoking the LLM to extract job details...")
         response = prompt_extract.invoke(input={"page_data": cleaned_text})
+        print("Response received from LLM.",response)
 
         try:
             json_parser = JsonOutputParser()
+            print("Parsing JSON response..!!!!!!!!!!!!!!!!!!!!!!!!!!.")
+            with open("response.json", "w") as f:
+                f.write(response.content)
             parsed_response = json_parser.parse(response.content)
-        except JsonOutputParser as e:
-            raise e("content is too big. unable to parse")
+            print("JSON response parsed successfully.@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        except Exception as e:
+            print("Error parsing JSON response:", e)
+            # raise e("content is too big. unable to parse")
         return parsed_response if isinstance(parsed_response, list) else [parsed_response]
 
     def write_mail(self,job,links):
